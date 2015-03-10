@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Cat Click</title>
+</head>
+<body>
+	<div id="parent">
+	</div>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+	<script>
+		var cats = [{"name": "Mimi", "img":"cat.jpg"}, {"name":"blue","img":"blue.jpg"}];
+		console.log(cats);
+		var clickCat = function() {
+			var countId = $(this).attr("id")+"_count";
+			var countDiv=document.getElementById(countId);
+			var count = countDiv.innerHTML*1 + 1;
+			console.log(count);
+			countDiv.innerHTML=count;
+		}
+		
+
+		var drawCats = function() {
+
+			for (i in cats) {
+				var c = cats[i];
+				var elemHeader = "<h2>"+c.name+"</h2>";
+				var elem = "<img id=" + c.name + " src=images/"+c.img+">";
+				console.log(elem);
+				var elemCountHeader = "<h2> Number of Clicks: </h2>"
+				var count_id = c.name + "_count";
+				var elemCount = "<div id="+count_id+">0</div>"
+				$("#parent").append(elemHeader);
+				$("#parent").append(elem);
+				$("#parent").append(elemCountHeader);
+				$("#parent").append(elemCount);
+				document.getElementById(c.name).addEventListener("click", clickCat);
+
+			}
+		}
+		
+		drawCats();
+	</script>
+</body>
+</html>

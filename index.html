@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Cat Click</title>
+</head>
+<body>
+	<!--Method 1
+	<img id="cat" src="images/cat.jpg" alt="Image of Cat" onclick="clickCat()">
+	<h2>Number of Clicks:</h2>
+	<div id="count">0</div>
+
+	<script>
+	
+		var clickCat = function() {
+			var catImage = document.getElementById("cat");
+			var countDiv=document.getElementById("count");
+			var count = countDiv.innerHTML*1 + 1;
+			console.log(count);
+			countDiv.innerHTML=count;
+		}
+	</script>
+	-->
+	<img id="cat" src="images/cat.jpg" alt="Image of Cat">
+	<h2>Number of Clicks:</h2>
+	<div id="count">0</div>
+	<script>
+		
+		var clickCat = function() {
+			var catImage = document.getElementById("cat");
+			var countDiv=document.getElementById("count");
+			var count = countDiv.innerHTML*1 + 1;
+			console.log(count);
+			countDiv.innerHTML=count;
+		}
+		//Make sure the function is defined before addEventListener!
+		document.getElementById("cat").addEventListener("click", clickCat);
+	</script>
+</body>
+</html>
