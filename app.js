@@ -26,7 +26,7 @@ $(function(){
 		selectedCat: 0,
 
 		init: function() {
-			model.selectedCat=model.cats[0];
+			model.selectedCat=0;
 		}
 	};
 
