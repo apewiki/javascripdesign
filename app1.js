@@ -49,39 +49,72 @@ $(function(){
 		},
 
 		incrementClicks: function() {
-			 model.cats[model.selectedCat].count+=1;
+			var ct = parseInt(model.cats[model.selectedCat].count);
+			model.cats[model.selectedCat].count= ct + 1;
 		},
 
 		setCurrentCat: function(i) {
 			model.selectedCat = i;
-			adminView.show();
+			adminView.update();
 		},
 
 		updateAdmin: function() {
-			adminView.show();
+			adminView.update();
+		},
+
+		saveSelectedCat: function(cat_name, cat_img, cat_clicks) {
+			console.log("saveSelectedCat is called!"+cat_name+":"+cat_img+":"+cat_clicks);
+			var found = false;
+			for (var i = 0; i<model.cats.length; i++) {
+				if (model.cats[i].name === cat_name) {
+					model.cats[i].img = cat_img;
+					model.cats[i].count = cat_clicks;
+					found = true;
+					break;
+				}	
+			};
+			if (!found ){
+				model.cats.push({"name":cat_name, "img":cat_img, "count":cat_clicks});
+				view1.render();
+			}
 		}
+
 	};
 
 	var adminView = {
 		init: function() {
+			adminView.update();
 
 			$("#admin_btn").bind("click", adminView.show);
 			$("input[value*='Cancel']").bind("click", function(){
 				$("#admin_form").hide();
 				console.log("cancel is called!");
 			});
+			$("#admin_form").submit(function(e) {
+				adminView.save();
+			})
 			$("#admin_form").hide();
 			console.log("adminView init() is called!");
 		},
 
-		show: function() {
-			$("#admin_form").show();
-
+		update:function() {
 			c=octupus.getSelectedCat();
-			console.log("show() is called!"+c);
+			console.log("update() is called!"+c);
 			$("input[name*='cat_name']").val(c.name);
 			$("input[name*='cat_img']").val(c.img);
 			$("input[name*='cat_clicks']").val(c.count);
+		},
+
+		show: function() {
+			$("#admin_form").show();
+		},
+
+		save: function() {
+			var cat_name = $("input[name*='cat_name']").val();
+			var cat_img = $("input[name*='cat_img']").val();
+			var cat_clicks = $("input[name*='cat_clicks']").val();
+			console.log("save() is called!"+cat_name+":"+cat_img+":"+cat_clicks);
+			octupus.saveSelectedCat(cat_name, cat_img, cat_clicks);
 		}
 	};
 
