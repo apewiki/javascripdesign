@@ -37,7 +37,7 @@ $(function(){
 			view1.init();
 			view2.init();
 			adminView.init();
-
+			console.log("octupus.init() is called");
 		},
 
 		getCats: function() {
@@ -63,20 +63,27 @@ $(function(){
 		},
 
 		saveSelectedCat: function(cat_name, cat_img, cat_clicks) {
-			console.log("saveSelectedCat is called!"+cat_name+":"+cat_img+":"+cat_clicks);
+
 			var found = false;
-			for (var i = 0; i<model.cats.length; i++) {
+			model.cats[model.selectedCat].name=cat_name;
+			model.cats[model.selectedCat].img = cat_img;
+			model.cats[model.selectedCat].count = cat_clicks;
+			console.log("saveSelectedCat is called!"+ model.cats[model.selectedCat].name);
+			view1.update(model.selectedCat, cat_name);
+			view2.render();
+			$("#admin_form").hide();
+			/*for (var i = 0; i<model.cats.length; i++) {
 				if (model.cats[i].name === cat_name) {
 					model.cats[i].img = cat_img;
 					model.cats[i].count = cat_clicks;
 					found = true;
 					break;
-				}	
+				}
 			};
 			if (!found ){
 				model.cats.push({"name":cat_name, "img":cat_img, "count":cat_clicks});
 				view1.render();
-			}
+			}*/
 		}
 
 	};
@@ -87,30 +94,37 @@ $(function(){
 
 			$("#admin_btn").bind("click", adminView.show);
 			$("input[value*='Cancel']").bind("click", function(){
+				adminView.update();
 				$("#admin_form").hide();
 				console.log("cancel is called!");
 			});
+
+			// preventDefault is needed to preventing navigating to start of html and re-init through script call
+			// because no action is being programed in form <form action= "....">
 			$("#admin_form").submit(function(e) {
 				adminView.save();
+				e.preventDefault();
 			})
+			//document.getElementById("save").addEventListener("submit",adminView.save);
 			$("#admin_form").hide();
 			console.log("adminView init() is called!");
 		},
 
 		update:function() {
 			c=octupus.getSelectedCat();
-			console.log("update() is called!"+c);
-			$("input[name*='cat_name']").val(c.name);
+			console.log("update() is called!"+c.name);
+			$("#cat_name").val(c.name);
 			$("input[name*='cat_img']").val(c.img);
 			$("input[name*='cat_clicks']").val(c.count);
 		},
 
 		show: function() {
+			adminView.update();
 			$("#admin_form").show();
 		},
 
 		save: function() {
-			var cat_name = $("input[name*='cat_name']").val();
+			var cat_name = $("#cat_name").val();
 			var cat_img = $("input[name*='cat_img']").val();
 			var cat_clicks = $("input[name*='cat_clicks']").val();
 			console.log("save() is called!"+cat_name+":"+cat_img+":"+cat_clicks);
@@ -141,7 +155,14 @@ $(function(){
 				});
 				catList.appendChild(elem);
 			});
+		},
+
+		update: function(i, cat_name) {
+			var catList = document.getElementById("cat-list");
+			console.log(catList.childNodes[i]);
+			catList.childNodes[i+1].innerHTML = cat_name;
 		}
+
 	};
 
 	var view2 = {
