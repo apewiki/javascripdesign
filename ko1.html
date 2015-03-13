@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>KO test 1</title>
+	<script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-3.1.0.js"></script>
+</head>
+<body>
+	<h2 data-bind='text: name'></h2>
+	<div data-bind='text: count'></div>
+	<h3 data-bind='text: getLevel'></h3>
+	<img src="" data-bind='click: incrementClicks, attr: {src: img} '>
+	
+	<script>
+		var ViewModel = function() {
+			this.name = ko.observable("Mimi");
+			this.count = ko.observable(0);
+			this.img = ko.observable("images/cat.jpg");
+
+			this.incrementClicks = function() {
+				this.count(this.count()+1);
+			};
+
+			this.getLevel = ko.computed(function() {
+				if (this.count() < 2 ) {
+					return "infant";
+				} else if (this.count() >=2 && this.count() <5) {
+					return "toddler";
+				} else if (this.count() >=5 && this.count() < 11) {
+					return "kid";
+				} else {
+					return "Bad teen";
+				}
+			}, this);
+		};
+
+		ko.applyBindings(new ViewModel());
+	</script>
+</body>
+</html>
