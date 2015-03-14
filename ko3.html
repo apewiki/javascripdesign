@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>KO test 1</title>
+	<title>KO test 3</title>
 	<script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-3.1.0.js"></script>
 </head>
 <body>
-	<h2 data-bind='text: name'></h2>
-	<div data-bind='text: count'></div>
-	<h3 data-bind='text: getLevel'></h3>
-	<img src="" data-bind='click: incrementClicks, attr: {src: img} '>
+	<h2 data-bind='text: myCat().name'></h2>
+	<div data-bind='text: myCat().count'></div>
+	<h3 data-bind='text: myCat().getLevel'></h3>
+	<img src="" data-bind='click: incrementClicks, attr: {src: myCat().img} '>
 	<h2>Nicknames:</h2>
-	<ul data-bind = 'foreach: nicknames'>
+	<ul data-bind = 'foreach: myCat().nicknames'>
 		<li>
 			<span data-bind = 'text:nm'></span>
 			<a href="#" data-bind = 'click: $parent.removeNickName'>Remove</a>
@@ -19,9 +19,7 @@
 	<button data-bind='click:add'>Add</button>
 
 	<script>
-		var ViewModel = function() {
-			var self = this;
-
+		var Cat = function() {
 			this.name = ko.observable("Mimi");
 			this.count = ko.observable(0);
 			this.img = ko.observable("images/cat.jpg");
@@ -33,11 +31,6 @@
 				{'nm':'Lar san'},
 				{'nm':'Lao si'}
 				]);
-
-			this.incrementClicks = function() {
-				this.count(this.count()+1);
-			};
-
 			this.getLevel = ko.computed(function() {
 				if (this.count() < 2 ) {
 					return "infant";
@@ -49,19 +42,32 @@
 					return "Bad teen";
 				}
 			}, this);
+		};
+
+		var ViewModel = function() {
+			this.myCat = ko.observable(new Cat());
+
+
+
+			this.incrementClicks = function() {
+				this.myCat().count(this.myCat().count()+1);
+			};
+
+
 
 			this.add =  function() {
-				this.nicknames.push({'nm':'Lao xiao'});
+				this.myCat().nicknames.push({'nm':'Lao xiao'});
 			}
 
+			var self = this;
 			self.removeNickName = function() {
 				var name = this;
 				console.log("This nickname is "+ name);
-				var i = self.nicknames.indexOf(name);
+				var i = self.myCat().nicknames.indexOf(name);
 
-				console.log("REmove is called!"+this+": index:"+i);
-				self.nicknames.splice(i,1);
-				console.log(self.nicknames());
+				console.log("REmove is called!"+name+": index:"+i);
+				self.myCat().nicknames.remove(this);
+				console.log(self.myCat().nicknames());
 			}
 		};
 

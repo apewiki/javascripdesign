@@ -1,25 +1,25 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>KO test 1</title>
+	<title>KO test 2</title>
 	<script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-3.1.0.js"></script>
 </head>
 <body>
-	<h2 data-bind='text: name'></h2>
-	<div data-bind='text: count'></div>
-	<h3 data-bind='text: getLevel'></h3>
-	<img src="" data-bind='click: incrementClicks, attr: {src: img} '>
+	<h2 data-bind='text: myCat().name'></h2>
+	<div data-bind='text: myCat().count'></div>
+	<h3 data-bind='text: myCat().getLevel'></h3>
+	<img src="" data-bind='click: incrementClicks, attr: {src: myCat().img} '>
 	<h2>Nicknames:</h2>
-	<ul data-bind = 'foreach: nicknames'>
+	<ul data-bind = 'foreach: myCat().nicknames'>
 		<li>
-			<span data-bind = 'text:nm'></span>
+			<span data-bind = 'text:$data'></span>
 			<a href="#" data-bind = 'click: $parent.removeNickName'>Remove</a>
 		</li>
 	</ul>
 	<button data-bind='click:add'>Add</button>
 
 	<script>
-		var ViewModel = function() {
+		var Cat = function() {
 			var self = this;
 
 			this.name = ko.observable("Mimi");
@@ -27,17 +27,7 @@
 			this.img = ko.observable("images/cat.jpg");
 			//somehow simple array does not work with remove and any other functions
 			//only works with array of objects
-			this.nicknames = ko.observableArray([
-				{'nm':'Lao da'},
-				{'nm':'Lao er'},
-				{'nm':'Lar san'},
-				{'nm':'Lao si'}
-				]);
-
-			this.incrementClicks = function() {
-				this.count(this.count()+1);
-			};
-
+			this.nicknames = ko.observableArray(['Lao da','Lao er', 'Lao san',' Lao si']);
 			this.getLevel = ko.computed(function() {
 				if (this.count() < 2 ) {
 					return "infant";
@@ -49,19 +39,28 @@
 					return "Bad teen";
 				}
 			}, this);
+		};
+
+		var ViewModel = function() {
+			var self = this;
+
+			this.myCat = ko.observable(new Cat());
+
+			this.incrementClicks = function() {
+				this.myCat().count(this.myCat().count()+1);
+			};
+
+
 
 			this.add =  function() {
-				this.nicknames.push({'nm':'Lao xiao'});
+				this.myCat().nicknames.push('Lao xiao');
 			}
 
 			self.removeNickName = function() {
-				var name = this;
-				console.log("This nickname is "+ name);
-				var i = self.nicknames.indexOf(name);
 
-				console.log("REmove is called!"+this+": index:"+i);
-				self.nicknames.splice(i,1);
-				console.log(self.nicknames());
+				console.log("REmove is called!"+this);
+				self.myCat().nicknames.remove(ko.observable(this));
+				console.log(self.myCat().nicknames());
 			}
 		};
 
