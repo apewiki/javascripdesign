@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>KO test 5: construct mult cats from list data, update current when clicked</title>
+	<script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-3.1.0.js"></script>
+</head>
+<body>
+	<ul data-bind= 'foreach: catList'>
+		<!--now in cat context-->
+		<li data-bind = 'text:name, click:$parent.setCurrentCat'>
+		</li>
+	</ul>
+	
+	<div data-bind='with: currentCat'>
+		<h2 data-bind='text: name'></h2>
+		<div data-bind='text: count'></div>
+		<h3 data-bind='text: getLevel'></h3>
+		<img src="" data-bind='click: $parent.incrementClicks, attr: {src: img} '>
+		<h2>Nicknames:</h2>
+		<ul data-bind = 'foreach: nicknames'>
+			<li>
+				<span data-bind = 'text:nm'></span>
+				<a href="#" data-bind = 'click: $root.removeNickName'>Remove</a>
+			</li>
+		</ul>
+		<button data-bind='click:$parent.add'>Add</button>
+	</div>
+
+	<script>
+		var initCatList = [
+			{
+				"name": "Mimi",
+				"img": "images/cat.jpg",
+				"count": 0,
+				"nicknames":[
+				{'nm':'Lao da'},
+				{'nm':'Lao er'},
+				{'nm':'Lao san'},
+				{'nm':'Lao si'}
+				]
+			},
+			{
+				"name":"blue",
+				"img":"images/blue.jpg",
+				"count":0,
+				"nicknames":[
+				{'nm':'A da'},
+				{'nm':'A er'},
+				{'nm':'A san'},
+				{'nm':'A si'}
+				]
+			},
+			{
+				"name": "Kiddie",
+				"img":"images/cuties.jpg",
+				"count":0,
+				"nicknames":[
+				{'nm':'da'},
+				{'nm':'er'},
+				{'nm':'san'},
+				{'nm':'si'}
+				]
+			},
+			{
+				"name": "Merry",
+				"img":"images/merry.jpg",
+				"count":0,
+				"nicknames":[
+				{'nm':'da zi'},
+				{'nm':'er zi'},
+				{'nm':'san zi'},
+				{'nm':'si zi'}
+				]
+			}
+		];
+
+		var Cat = function(data) {
+			this.name = ko.observable(data.name);
+			this.count = ko.observable(data.count);
+			this.img = ko.observable(data.img);
+			//somehow simple array does not work with remove and any other functions
+			//only works with array of objects
+			console.log(data.nicknames);
+			this.nicknames = ko.observableArray(data.nicknames);
+				
+			this.getLevel = ko.computed(function() {
+				if (this.count() < 2 ) {
+					return "infant";
+				} else if (this.count() >=2 && this.count() <5) {
+					return "toddler";
+				} else if (this.count() >=5 && this.count() < 11) {
+					return "kid";
+				} else {
+					return "Bad teen";
+				}
+			}, this);
+		};
+
+		var ViewModel = function() {
+			var self = this;
+			self.catList = ko.observableArray([]);
+
+			initCatList.forEach( function(data) {
+				console.log('in initCatList foreach');
+				self.catList.push(new Cat(data));
+			}); 
+
+			console.log(self.catList()[1].name());
+			
+			self.currentCat = ko.observable(self.catList()[0]);
+			console.log(self.currentCat());
+
+			self.setCurrentCat = function() {
+				console.log(this.name());
+				//Here: can't do currentcat = this;!
+				//Alternatively: 
+				/*self.setCurrentCat = function(clickedCat) {
+					self.currentCat(clickedCat);
+				}*/
+				self.currentCat(this);
+			};
+
+			//This is tricky, binding context is already myCat, inside the function this -> myCat
+			self.incrementClicks = function() {
+				this.count(this.count()+1);
+				console.log("incrementClicks:")
+				console.log(this);
+			};
+			/*alternatively: since this inside the function is point to myCat, use self instead
+			this.incrementClicks = function() {
+				self.myCat().count(self.myCat().count()+1);
+			};
+			*/
+
+
+
+			self.add =  function() {
+				this.nicknames.push({'nm':'Lao xiao'});
+				console.log("add:");
+				console.log(this.nicknames());
+			};
+
+			
+			self.removeNickName = function() {
+				console.log("in removeNickName()!")
+				console.log(this);
+				console.log(self.currentCat().name());
+
+				self.currentCat().nicknames.remove(this);
+				console.log(self.currentCat().nicknames());
+			};
+		};
+
+		ko.applyBindings(new ViewModel());
+
+	</script>
+</body>
+</html>
